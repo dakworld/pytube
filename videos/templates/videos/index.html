@@ -1,0 +1,13 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
+
+{% if best_videos_list %}
+    <ul>
+    {% for video in best_videos_list %}
+    <li><a href="{% url 'videos:video' video.id %}">{{ video.title }}<br>{{ video.uploader }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No videos are available.</p>
+{% endif %}
