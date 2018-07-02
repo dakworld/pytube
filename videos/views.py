@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from django.db.models.functions import Cast
-from django.contrib.postgres.search import TrigramDistance
+from django.contrib.postgres.search import TrigramSimilarity
 
 from .models import Video, Comment
 
@@ -23,7 +23,7 @@ class SearchView(generic.ListView):
 
     def get_queryset(self):
         query = self.request.GET['search']
-        search = Video.objects.annotate(distance=TrigramDistance('title', query),).filter(distance__lte=0.7).order_by('distance')
+        search = Video.objects.annotate(distance=TrigramSimilarity('title', query),).filter(distance__gt=0.3).order_by('-distance')
         return search
 
 class VideoView(generic.DetailView):
