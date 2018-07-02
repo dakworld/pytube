@@ -22,7 +22,7 @@ class SearchView(generic.ListView):
 
     def get_queryset(self):
         query = self.request.GET['search']
-        search = Video.objects.annotate(search=SearchVector('title', 'uploader', 'description'),).annotate(similarity=TrigramSimilarity('search', query),).filter(similarity__gt=0.2).order_by('-similarity')
+        search = Video.objects.annotate(similarity=TrigramSimilarity('title', query),).filter(similarity__gt=0.2).order_by('-similarity')
         return search
 
 class VideoView(generic.DetailView):
