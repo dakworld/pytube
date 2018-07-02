@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from simple_search import search_filter
+from django.contrib.postgres.search import SearchVector, TrigramSimilarity
 
 from .models import Video, Comment
 
@@ -22,9 +22,7 @@ class SearchView(generic.ListView):
 
     def get_queryset(self):
         query = self.request.GET['search']
-        search_fields = ['title', 'description', 'uploader', '=id']
-        f = search_filter(search_fields, query)
-        filtered = Video.objects.filter(f)
+        Entry.objects.annotate(search=SearchVector('title', 'uploader', 'description', 'comment__message'),).annotate(similarity=TrigramSimilarity('search', test),).filter(similarity__gt=0.2).order_by('-similarity')
         return filtered
 
 class VideoView(generic.DetailView):
