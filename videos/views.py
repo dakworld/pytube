@@ -22,7 +22,7 @@ class SearchView(generic.ListView):
 
     def get_queryset(self):
         query = self.request.GET['search']
-        search = Video.objects.annotate(distance=TrigramDistance('title', query),).filter(distance__lte=0.7).order_by('distance')
+        search = Video.objects..extra({'title_text': "CAST(title as text)"}).annotate(distance=TrigramDistance('title_text', query),).filter(distance__lte=0.7).order_by('distance')
         return search
 
 class VideoView(generic.DetailView):
