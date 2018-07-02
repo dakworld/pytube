@@ -15,7 +15,9 @@
 {% if best_videos_list %}
     <ul>
     {% for video in best_videos_list %}
+    {% if video.listed %}
     <li><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" height="100"/><br>{{ video.title }}: {{ video.uploader }}</a></li>
+    {% endif %}
     {% endfor %}
     </ul>
 {% else %}
