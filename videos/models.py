@@ -7,6 +7,7 @@ class Video(models.Model):
     up_votes = models.IntegerField(default=0)
     video_file = models.FileField(upload_to='uploads/videos/')
     thumbnail = models.FileField(upload_to='uploads/videos/thumbnails/')
+    listed = models.BooleanField(default=True)
     pub_date = models.DateTimeField('date published')
     comments = []
     def __str__(self):
