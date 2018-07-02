@@ -1,0 +1,52 @@
+{% load static %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
+</head>
+
+<body>
+<div class='topbar'>
+<strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}">PyTube</a></strong>
+<form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
+<input type="text" id="search" name="search" />
+<input type="submit" value="Search" />
+</form>
+</div>
+<div style="height: 30;"></div>
+<h1 style="text-align: center;">{{ video.title }}</h1>
+<h3 style="text-align: center;"><em>uploaded by: {{ video.uploader }}</em></h3>
+<br>
+<table>
+<tr>
+<td>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<video src="/{{video.video_file}}" style="width:640px;height:360px;" controls></video>
+<h4>Rating: ( {{ video.up_votes }} )</h4>
+<form action="{% url 'videos:rate' video.id %}" method="post">
+{% csrf_token %}
+<input type="radio" name="choice" id="up" value="up" />
+<label for="up"><img src="{% static "up_vote.png" %}" style="width:40px;height:40px;"></label>
+<input type="radio" name="choice" id="down" value="down" />
+<label for="down"><img src="{% static "down_vote.png" %}" style="width:40px;height:40px;"></label><br>
+<input type="submit" value="Rate" />
+</form>
+<p>{{ video.description }}</p>
+</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>
+<h3>Add a Comment:</h3>
+<form action="{% url 'videos:comment' video.id %}" method="post">
+{% csrf_token %}
+<label for="name">Name: </label>
+<input type="text" name="name" id="name" /><br>
+<textarea name="comment_text" id="comment_text"></textarea><br>
+<input type="submit" value="Post Comment" />
+</form>
+<h3>Comments:</h3>
+{% for comment in video.comment_set.all %}
+    <h4>{{ comment.name }} &lt;<i>{{ comment.pub_date }}</i>&gt;</h4>
+    <blockquote><pre>{{ comment.message }}</pre></blockquote>
+{% endfor %}
+</td>
+</tr>
+</table>
+</body>

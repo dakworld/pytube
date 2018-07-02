@@ -2,31 +2,47 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
+from django.utils import timezone
+from simple_search import search_filter
 
-from .models import Video
+from .models import Video, Comment
 
 class IndexView(generic.ListView):
-    template_name = 'polls/index.html'
-    context_object_name = 'best_video_list'
+    template_name = 'videos/index.html'
+    context_object_name = 'best_videos_list'
+    paginate_by = 20
 
     def get_queryset(self):
-        """Return the last five published questions."""
-        return Video.objects.order_by('-up_votes')[:20]
+        return Video.objects.order_by('-up_votes')
 
-def video(request, video_id):
-    question = get_object_or_404(Question, pk=question_id)
-    try:
-        selected_choice = question.choice_set.get(pk=request.POST['choice'])
-    except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
-        return render(request, 'polls/detail.html', {
-            'question': question,
-            'error_message': "You didn't select a choice.",
-        })
-    else:
-        selected_choice.votes += 1
-        selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+class SearchView(generic.ListView):
+    template_name = 'videos/index.html'
+    context_object_name = 'best_videos_list'
+    paginate_by = 20
+
+    def get_queryset(self):
+        query = self.request.GET['search']
+        search_fields = ['title', 'description', 'uploader', '=id']
+        f = search_filter(search_fields, query)
+        filtered = Video.objects.filter(f)
+        return filtered
+
+class VideoView(generic.DetailView):
+    model = Video
+    template_name = 'videos/video.html'
+
+def rate(request, video_id):
+    video = get_object_or_404(Video, pk=video_id)
+    if request.POST['choice'] == 'up':
+        video.up_votes += 1
+        video.save()
+    elif request.POST['choice'] == 'down':
+        video.up_votes -= 1
+        video.save()
+    return HttpResponseRedirect(reverse('videos:video', args=(video.id,)))
+
+def comment(request, video_id):
+    video = get_object_or_404(Video, pk=video_id)
+    video.comment_set.create(name = request.POST['name'], email = '', message = request.POST['comment_text'], pub_date=timezone.now())
+    video.save()
+    return HttpResponseRedirect(reverse('videos:video', args=(video.id,)))
