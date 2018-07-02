@@ -4,11 +4,12 @@ li a {
 body {
     background: blue url("images/background.gif") no-repeat;
     background-size: cover;
-    color: lightblue;
+    color: #beedff;
     .topbar {
-        background: greenyellow;
-        color: blue;
     }
+}
+h3 {
+    color: #ffbeed;
 }
 .topbar {
     border-color: #0000ff;
