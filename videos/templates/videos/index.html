@@ -11,13 +11,18 @@
 </form>
 </div>
 <div style="height: 30;"></div>
+<table><tr><td>
 {% if best_videos_list %}
     <ul>
     {% for video in best_videos_list %}
-    <li><a href="{% url 'videos:video' video.id %}">{{ video.title }}: {{ video.uploader }}</a></li>
+    <li><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" height="100"/><br>{{ video.title }}: {{ video.uploader }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
     <p>No videos are available.</p>
 {% endif %}
+</td>
+<td>
+<div class='adbox'></div>
+</td></tr></table>
 </body>
