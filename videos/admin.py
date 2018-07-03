@@ -12,6 +12,7 @@ class VideoAdmin(admin.ModelAdmin):
         ('Video Information', {'fields': ['title', 'description']}),
         ('Files', {'fields': ['video_file', 'thumbnail']}),
         ('Details', {'fields': ['uploader', 'pub_date', 'listed']}),
+        ('Playlists', {'fields': ['belongs_to']}),
     ]
 
     def has_change_permission(self, request, obj=None):

@@ -1,6 +1,13 @@
 from django.db import models
 
+class Playlist(models.Model):
+    title = models.CharField(max_length=100)
+    uploader = models.CharField(max_length=25)
+    def __str__(self):
+        return self.title
+
 class Video(models.Model):
+    belongs_to = models.ManyToManyField(Playlist)
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=500)
     uploader = models.CharField(max_length=25)
