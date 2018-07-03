@@ -7,6 +7,7 @@ from django.db.models.functions import Greatest
 from django.db.models import Max
 from django.contrib.postgres.search import TrigramSimilarity
 from itertools import chain
+from django.contrib.auth.models import User
 
 from .models import Video, Comment, Playlist
 
@@ -47,6 +48,9 @@ class PlaylistView(generic.DetailView):
     model = Playlist
     template_name = 'videos/playlist.html'
 
+class RegisterView(TemplateView):
+	template_name = 'videos/register.html'
+
 def rate(request, video_id):
     video = get_object_or_404(Video, pk=video_id)
     if request.POST['choice'] == 'up':
@@ -62,3 +66,9 @@ def comment(request, video_id):
     video.comment_set.create(name = request.POST['name'], email = '', message = request.POST['comment_text'], pub_date=timezone.now())
     video.save()
     return HttpResponseRedirect(reverse('videos:video', args=(video.id,)))
+
+def createuser(request):
+    user = User.objects.create_user(request.POST['name'], request.POST['email'], request.POST['password'])
+    user.is_staff = True 
+    user.save()
+    return HttpResponseRedirect('/admin')

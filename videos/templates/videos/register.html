@@ -1,0 +1,24 @@
+{% load static %}
+<head>
+<link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
+</head>
+<body>
+<div class='topbar'>
+<strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}">PyTube</a></strong>
+<form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
+<input type="text" id="search" name="search" />
+<input type="submit" value="Search" />
+</form>
+</div>
+<div style="height: 30;"></div>
+<form action="{% url 'videos:createuser' %}" method="POST">
+{% csrf_token %}
+<label for="name">Username: </label>
+<input type="text" id="name" name="name" /><br>
+<label for="email">Email: </label>
+<input type="email" id="email" name="email" /><br>
+<label for="password">Password: </label>
+<input type="password" id="password" name="password" /><br>
+<input type="submit" value="Create User" />
+</form>
+</body>
