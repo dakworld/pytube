@@ -25,7 +25,7 @@ class SearchView(generic.ListView):
     def get_queryset(self):
         query = self.request.GET['search']
         search = Video.objects.annotate(similarity=Greatest(
-            TrigramSimilarity('name', query), 
+            TrigramSimilarity('title', query), 
             TrigramSimilarity('uploader', query),
             TrigramSimilarity('description', query),
             Max(TrigramSimilarity('comments__message', query))
@@ -48,6 +48,6 @@ def rate(request, video_id):
 
 def comment(request, video_id):
     video = get_object_or_404(Video, pk=video_id)
-    video.comment_set.create(name = request.POST['title'], email = '', message = request.POST['comment_text'], pub_date=timezone.now())
+    video.comment_set.create(name = request.POST['name'], email = '', message = request.POST['comment_text'], pub_date=timezone.now())
     video.save()
     return HttpResponseRedirect(reverse('videos:video', args=(video.id,)))
