@@ -1,4 +1,4 @@
-a {
+.column a {
     color: lightpink;
 }
 body {
@@ -38,3 +38,45 @@ h3 {
     padding: 0 4px;
   }
 
+  .column {
+    flex: 20%;
+    max-width: 20%;
+    padding: 0 4px;
+  }
+  
+  .column a img {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    vertical-align: middle;
+  }
+
+  /* Responsive layout - makes a two column-layout instead of four columns */
+  @media screen and (max-width: 1000px) {
+    .column {
+      flex: 25%;
+      max-width: 25%;
+    }
+  }
+  
+  /* Responsive layout - makes a two column-layout instead of four columns */
+  @media screen and (max-width: 800px) {
+    .column {
+      flex: 33%;
+      max-width: 33%;
+    }
+  }
+  
+  /* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+  @media screen and (max-width: 600px) {
+    .column {
+      flex: 50%;
+      max-width: 50%;
+    }
+  }
+  /* Responsive layout - makes a two column-layout instead of four columns */
+  @media screen and (max-width: 400px) {
+    .column {
+      flex: 100%;
+      max-width: 100%;
+    }
+  }
