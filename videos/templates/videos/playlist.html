@@ -15,7 +15,7 @@
 <h3 style="text-align: center;"><em>created by: {{ video.uploader }}</em></h3>
 {% if playlist.videos %}
     <div class = "row">
-    {% for video in playlist.videos %}
+    {% for video in playlist.videos.all() %}
     {% if video.listed %}
     <div class="column"><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}<br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a></div>
     {% endif %}

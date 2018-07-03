@@ -10,6 +10,7 @@ class PlaylistAdmin(admin.ModelAdmin):
 
     fieldsets = [
         ('Playlist Information', {'fields': ['title', 'uploader']}),
+        ('Display Options', {'fields': ['thumbnail', 'listed']})
         ('Videos', {'fields': ['videos']}),
     ]
 

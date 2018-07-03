@@ -19,6 +19,8 @@ class Video(models.Model):
 class Playlist(models.Model):
     title = models.CharField(max_length=100)
     uploader = models.CharField(max_length=25)
+    listed = models.BooleanField(default=True)
+    thumbnail = models.FileField(upload_to='uploads/videos/thumbnails/')
     videos = models.ManyToManyField(Video)
     def __str__(self):
         return self.title
