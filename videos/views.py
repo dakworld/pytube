@@ -17,7 +17,7 @@ class IndexView(generic.ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        return Video.objects.order_by('-up_votes')
+        return Video.objects.annotate(order=F('views') * F('up_votes')).order_by('-order')
 
 class SearchView(generic.ListView):
     template_name = 'videos/index.html'
@@ -63,8 +63,9 @@ def rate(request, video_id):
         video.up_votes += 1
         video.save()
     elif request.POST['choice'] == 'down':
-        video.up_votes -= 1
-        video.save()
+        if video.up_votes >= 1:
+            video.up_votes -= 1
+            video.save()
     return HttpResponseRedirect(reverse('videos:video', args=(video.id,)))
 
 def comment(request, video_id):
