@@ -22,6 +22,11 @@ class PlaylistAdmin(admin.ModelAdmin):
         if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
             return False
         return True
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        obj.save()
 
 class VideoAdmin(admin.ModelAdmin):
 
