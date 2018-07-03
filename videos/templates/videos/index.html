@@ -15,7 +15,7 @@
     <div class = "row">
     {% for video in best_videos_list %}
     {% if video.listed %}
-    <div class="column"><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}: {{ video.uploader }}</a></div>
+    <div class="column"><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}<br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a></div>
     {% endif %}
     {% endfor %}
     </div>
