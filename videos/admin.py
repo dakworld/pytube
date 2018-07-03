@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Video, Comment
+from .models import Video, Comment, Playlist
 
 class CommentInline(admin.TabularInline):
     model = Comment
@@ -27,4 +27,6 @@ class VideoAdmin(admin.ModelAdmin):
     
     inlines = [CommentInline]
 
+admin.site.register(Comment)
+admin.site.register(Playlist)
 admin.site.register(Video, VideoAdmin)
