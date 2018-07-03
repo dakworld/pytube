@@ -37,7 +37,7 @@ class SearchView(generic.ListView):
             TrigramSimilarity('uploader', query),
             Max(TrigramSimilarity('videos__title', query))
             )).order_by('-similarity')
-        search = chain(videos, playlists)
+        search = list(chain(videos, playlists))
         return search
 
 class VideoView(generic.DetailView):
