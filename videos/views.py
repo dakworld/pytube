@@ -43,6 +43,10 @@ class SearchView(generic.ListView):
 class VideoView(generic.DetailView):
     model = Video
     template_name = 'videos/video.html'
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        self.get_object().views += 1
+        return context
 
 class PlaylistView(generic.DetailView):
     model = Playlist

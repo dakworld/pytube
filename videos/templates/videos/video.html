@@ -20,7 +20,7 @@
 <td>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 <video src="/{{video.video_file}}" style="width:640px;height:360px;" controls></video>
-<h4>Rating: ( {{ video.up_votes }} )</h4>
+<h4 style="color: plum;">Views: ({{ video.views }}), Rating: ( {{ video.up_votes }} )</h4>
 <form action="{% url 'videos:rate' video.id %}" method="post">
 {% csrf_token %}
 <input type="radio" name="choice" id="up" value="up" />
