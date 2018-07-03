@@ -7,7 +7,7 @@ from django.db.models.functions import Greatest
 from django.db.models import Max
 from django.contrib.postgres.search import TrigramSimilarity
 from itertools import chain
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from .models import Video, Comment, Playlist
 
@@ -71,4 +71,6 @@ def createuser(request):
     user = User.objects.create_user(request.POST['name'], request.POST['email'], request.POST['password'])
     user.is_staff = True 
     user.save()
+    my_group = Group.objects.get(name='creator') 
+    my_group.user_set.add(your_user)
     return HttpResponseRedirect('/admin')
