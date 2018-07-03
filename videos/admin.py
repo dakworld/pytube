@@ -26,6 +26,4 @@ class VideoAdmin(admin.ModelAdmin):
     
     inlines = [CommentInline]
 
-admin.site.register(Comment)
-admin.site.register(Video)
 admin.site.register(Video, VideoAdmin)
