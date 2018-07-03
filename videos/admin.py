@@ -54,5 +54,5 @@ class VideoAdmin(admin.ModelAdmin):
         obj.save()
 
 admin.site.register(Comment)
-admin.site.register(Playlist)
+admin.site.register(Playlist, PlaylistAdmin)
 admin.site.register(Video, VideoAdmin)

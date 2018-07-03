@@ -45,7 +45,8 @@ class VideoView(generic.DetailView):
     template_name = 'videos/video.html'
     def get_context_data(self, **kwargs):
         context = super(generic.DetailView, self).get_context_data(**kwargs)
-        self.get_object().views += 1
+        obj = self.get_object()
+        obj.views = obj.views + 1
         return context
 
 class PlaylistView(generic.DetailView):
