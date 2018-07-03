@@ -7,7 +7,7 @@ from django.db.models.functions import Greatest
 from django.db.models import Max
 from django.contrib.postgres.search import TrigramSimilarity
 
-from .models import Video, Comment
+from .models import Video, Comment, Playlist
 
 class IndexView(generic.ListView):
     template_name = 'videos/index.html'
@@ -34,6 +34,10 @@ class SearchView(generic.ListView):
 
 class VideoView(generic.DetailView):
     model = Video
+    template_name = 'videos/video.html'
+
+class PlaylistView(generic.DetailView):
+    model = Playlist
     template_name = 'videos/video.html'
 
 def rate(request, video_id):
