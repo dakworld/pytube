@@ -48,7 +48,7 @@ class PlaylistView(generic.DetailView):
     model = Playlist
     template_name = 'videos/playlist.html'
 
-class RegisterView(TemplateView):
+class RegisterView(generic.TemplateView):
 	template_name = 'videos/register.html'
 
 def rate(request, video_id):
