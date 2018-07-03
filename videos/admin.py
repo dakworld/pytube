@@ -12,17 +12,16 @@ class VideoAdmin(admin.ModelAdmin):
         ('Video Information', {'fields': ['title', 'description']}),
         ('Files', {'fields': ['video_file', 'thumbnail']}),
         ('Details', {'fields': ['uploader', 'pub_date', 'listed']}),
-        ('Playlists', {'fields': ['belongs_to']}),
     ]
 
     def has_change_permission(self, request, obj=None):
-        #if obj is not None and obj.created_by != request.user:
-        #    return False
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
         return True
 
     def has_delete_permission(self, request, obj=None):
-        #if obj is not None and obj.created_by != request.user:
-        #    return False
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
         return True
     
     inlines = [CommentInline]

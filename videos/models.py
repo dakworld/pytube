@@ -1,13 +1,14 @@
 from django.db import models
+from audit_log.models import AuthStampedModel
 
-class Playlist(models.Model):
+class Playlist(AuthStampedModel):
     title = models.CharField(max_length=100)
     uploader = models.CharField(max_length=25)
+    videos = models.ManyToManyField(Video)
     def __str__(self):
         return self.title
 
-class Video(models.Model):
-    belongs_to = models.ManyToManyField(Playlist)
+class Video(AuthStampedModel):
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=500)
     uploader = models.CharField(max_length=25)
