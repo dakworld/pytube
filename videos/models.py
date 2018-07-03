@@ -22,6 +22,7 @@ class Playlist(models.Model):
     listed = models.BooleanField(default=True)
     thumbnail = models.FileField(upload_to='uploads/videos/thumbnails/')
     videos = models.ManyToManyField(Video)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
         return self.title
 
