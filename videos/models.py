@@ -5,7 +5,7 @@ class Video(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=500)
     uploader = models.CharField(max_length=25)
-    up_votes = models.IntegerField(default=0)
+    up_votes = models.IntegerField(default=1)
     views = models.IntegerField(default=1)
     video_file = models.FileField(upload_to='uploads/videos/')
     thumbnail = models.FileField(upload_to='uploads/videos/thumbnails/')
