@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Video(models.Model):
     title = models.CharField(max_length=100)
@@ -9,7 +10,7 @@ class Video(models.Model):
     thumbnail = models.FileField(upload_to='uploads/videos/thumbnails/')
     listed = models.BooleanField(default=True)
     pub_date = models.DateTimeField(auto_now_add=True, editable=False)
-    comments = []
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
         return self.uploader + ':' + self.title
     def was_published_recently(self):
