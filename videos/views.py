@@ -3,7 +3,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from django.db.models.functions import Cast
+from django.db.models.functions import Greatest
+from django.db.models import Max
 from django.contrib.postgres.search import TrigramSimilarity
 
 from .models import Video, Comment
