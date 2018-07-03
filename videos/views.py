@@ -63,7 +63,7 @@ def rate(request, video_id):
 
 def comment(request, video_id):
     video = get_object_or_404(Video, pk=video_id)
-    video.comment_set.create(name = request.POST['name'], email = '', message = request.POST['comment_text'], pub_date=timezone.now())
+    video.comment_set.create(name = request.POST['name'], message = request.POST['comment_text'])
     video.save()
     return HttpResponseRedirect(reverse('videos:video', args=(video.id,)))
 

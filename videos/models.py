@@ -27,8 +27,7 @@ class Comment(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
     message = models.CharField(max_length=500)
-    email = models.CharField(max_length=30)
-    pub_date = models.DateTimeField('date published')
+    pub_date = models.DateTimeField(auto_now_add=True, editable=False)
     def __str__(self):
         return self.name + '::' + str(self.pub_date)
     def was_published_recently(self):
