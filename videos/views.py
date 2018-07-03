@@ -28,7 +28,7 @@ class SearchView(generic.ListView):
             TrigramSimilarity('title', query), 
             TrigramSimilarity('uploader', query),
             TrigramSimilarity('description', query),
-            Max(TrigramSimilarity('comments__message', query))
+            Max(TrigramSimilarity('comment__message', query))
             )).order_by('-similarity')
         return search
 
