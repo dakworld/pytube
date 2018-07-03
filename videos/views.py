@@ -72,5 +72,5 @@ def createuser(request):
     user.is_staff = True 
     user.save()
     my_group = Group.objects.get(name='creator') 
-    my_group.user_set.add(your_user)
+    my_group.user_set.add(user)
     return HttpResponseRedirect('/admin')
