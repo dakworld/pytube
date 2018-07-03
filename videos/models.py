@@ -2,7 +2,7 @@ from django.db import models
 
 class Video(models.Model):
     title = models.CharField(max_length=100)
-    description = models.CharField(max_length=500)
+    description = models.TextField(max_length=500)
     uploader = models.CharField(max_length=25)
     up_votes = models.IntegerField(default=0)
     video_file = models.FileField(upload_to='uploads/videos/')
