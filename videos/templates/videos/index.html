@@ -18,9 +18,8 @@
     <div class="column">
     {% if video.pub_date %}
     <a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}
-    {% endif %}
-    {% if video.videos %}
-    <a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Playlist: {{ video.title }}
+    {% else %}
+    <a href="{% url 'videos:playlist' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Playlist: {{ video.title }}
     {% endif %}
     <br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a></div>
     {% endif %}
