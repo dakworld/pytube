@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.db.models.functions import Greatest
 from django.db.models import Max
 from django.contrib.postgres.search import TrigramSimilarity
+from itertools import chain
 
 from .models import Video, Comment, Playlist
 
@@ -24,12 +25,18 @@ class SearchView(generic.ListView):
 
     def get_queryset(self):
         query = self.request.GET['search']
-        search = Video.objects.annotate(similarity=Greatest(
+        videos = Video.objects.annotate(similarity=Greatest(
             TrigramSimilarity('title', query), 
             TrigramSimilarity('uploader', query),
             TrigramSimilarity('description', query),
             Max(TrigramSimilarity('comment__message', query))
             )).order_by('-similarity')
+        playlists = Playlist.objects.annotate(similarity=Greatest(
+            TrigramSimilarity('title', query), 
+            TrigramSimilarity('uploader', query),
+            Max(TrigramSimilarity('videos__title', query))
+            )).order_by('-similarity')
+        search = chain(videos, playlists)
         return search
 
 class VideoView(generic.DetailView):
@@ -38,7 +45,7 @@ class VideoView(generic.DetailView):
 
 class PlaylistView(generic.DetailView):
     model = Playlist
-    template_name = 'videos/video.html'
+    template_name = 'videos/playlist.html'
 
 def rate(request, video_id):
     video = get_object_or_404(Video, pk=video_id)
