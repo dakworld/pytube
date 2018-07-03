@@ -1,14 +1,13 @@
 from django.db import models
-from audit_log.models import AuthStampedModel
 
-class Playlist(AuthStampedModel):
+class Playlist(models.Model):
     title = models.CharField(max_length=100)
     uploader = models.CharField(max_length=25)
     videos = models.ManyToManyField(Video)
     def __str__(self):
         return self.title
 
-class Video(AuthStampedModel):
+class Video(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=500)
     uploader = models.CharField(max_length=25)
@@ -16,7 +15,7 @@ class Video(AuthStampedModel):
     video_file = models.FileField(upload_to='uploads/videos/')
     thumbnail = models.FileField(upload_to='uploads/videos/thumbnails/')
     listed = models.BooleanField(default=True)
-    pub_date = models.DateTimeField('date published')
+    pub_date = models.DateTimeField(auto_now_add=True, editable=False)
     comments = []
     def __str__(self):
         return self.uploader + ':' + self.title

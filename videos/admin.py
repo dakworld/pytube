@@ -6,12 +6,28 @@ class CommentInline(admin.TabularInline):
     model = Comment
     extra = 1
 
+class PlaylistAdmin(admin.ModelAdmin):
+
+    fieldsets = [
+        ('Playlist Information', {'fields': ['title', 'uploader']}),
+        ('Videos', {'fields': ['videos']}),
+    ]
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
+        return True
+
 class VideoAdmin(admin.ModelAdmin):
 
     fieldsets = [
-        ('Video Information', {'fields': ['title', 'description']}),
+        ('Video Information', {'fields': ['title', 'uploader', 'description', 'listed']}),
         ('Files', {'fields': ['video_file', 'thumbnail']}),
-        ('Details', {'fields': ['uploader', 'pub_date', 'listed']}),
     ]
 
     def has_change_permission(self, request, obj=None):
@@ -25,6 +41,11 @@ class VideoAdmin(admin.ModelAdmin):
         return True
     
     inlines = [CommentInline]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        obj.save()
 
 admin.site.register(Comment)
 admin.site.register(Playlist)
