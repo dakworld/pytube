@@ -11,8 +11,8 @@
 </form>
 </div>
 <div style="height: 30;"></div>
-<h1 style="text-align: center;">{{ video.title }}</h1>
-<h3 style="text-align: center;"><em>created by: {{ video.uploader }}</em></h3>
+<h1 style="text-align: center;">{{ playlist.title }}</h1>
+<h3 style="text-align: center;"><em>created by: {{ playlist.uploader }}</em></h3>
 {% if playlist.videos %}
     <div class = "row">
     {% for video in playlist.videos.all %}
