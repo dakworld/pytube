@@ -47,7 +47,7 @@ class VideoView(generic.DetailView):
         context = super(generic.DetailView, self).get_context_data(**kwargs)
         obj = self.get_object()
         obj.views = obj.views + 1
-        print('done')
+        obj.save()
         return context
 
 class PlaylistView(generic.DetailView):
