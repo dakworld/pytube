@@ -46,10 +46,12 @@
 <input type="submit" value="Post Comment" />
 </form>
 <h3>Comments:</h3>
+<div style="height: 400; overflow: auto;">
 {% for comment in video.comment_set.all %}
     <h4>{{ comment.name }} &lt;<i>{{ comment.pub_date }}</i>&gt;</h4>
     <blockquote><pre>{{ comment.message }}</pre></blockquote>
 {% endfor %}
+</div>
 </td>
 </tr>
 </table>

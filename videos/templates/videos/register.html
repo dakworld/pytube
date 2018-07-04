@@ -11,14 +11,16 @@
 </form>
 </div>
 <div style="height: 30;"></div>
+<table>
 <form action="{% url 'videos:createuser' %}" method="POST">
 {% csrf_token %}
-<label for="name">Username: </label>
-<input type="text" id="name" name="name" /><br>
-<label for="email">Email: </label>
-<input type="email" id="email" name="email" /><br>
-<label for="password">Password: </label>
-<input type="password" id="password" name="password" /><br>
-<input type="submit" value="Create User" />
+<tr><td><label for="name">Username: </label></td>
+<td><input type="text" id="name" name="name" /></td></tr>
+<tr><td><label for="email">Email: </label></td>
+<td><input type="email" id="email" name="email" /></td></tr>
+<tr><td><label for="password">Password: </label>
+<td><input type="password" id="password" name="password" /></td></tr>
+<tr style="align-items: center;"><input type="submit" value="Create User" /></tr>
 </form>
+</table>
 </body>
