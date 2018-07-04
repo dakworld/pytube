@@ -1,0 +1,30 @@
+{% load static %}
+<head>
+<link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
+</head>
+<body>
+<div class='topbar'>
+<strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}">PyTube</a></strong>
+<form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
+<input type="text" id="search" name="search" />
+<input type="submit" value="Search" />
+</form>
+</div>
+<div style="height: 30;"></div>
+<h1 style="text-align: center;">{{ user.username }}</h1>
+<h3 style="text-align: center;"><em>Joined on: {{ user.date_joined }}</em></h3>
+{% if use.video_set %}
+    <div class = "row">
+    {% for video in user.video_set.all %}
+    {% if video.listed %}
+    <div class="column"><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}<br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a></div>
+    {% endif %}
+    {% endfor %}
+    </div>
+{% else %}
+    <p>No videos are available.</p>
+{% endif %}
+<div class='footer' style="float: right;">
+<a href="/admin">Login</a>&nbsp;|&nbsp;<a href="/register">Register</a>&nbsp;
+</div>
+</body>

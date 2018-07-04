@@ -31,13 +31,18 @@ class SearchView(generic.ListView):
             TrigramSimilarity('uploader', query),
             TrigramSimilarity('description', query),
             Max(TrigramSimilarity('comment__message', query))
-            )).order_by('-similarity')
+            ))
         playlists = Playlist.objects.annotate(similarity=Greatest(
             TrigramSimilarity('title', query), 
             TrigramSimilarity('uploader', query),
             Max(TrigramSimilarity('videos__title', query))
-            )).order_by('-similarity')
-        search = list(chain(videos, playlists))
+            ))
+        users = User.objects.annotate(similarity=Greatest(
+            TrigramSimilarity('username', query), 
+            TrigramSimilarity('email', query),
+            Max(TrigramSimilarity('video_set__title', query))
+            ))
+        search = sorted(chain(videos, playlists, users), key=lambda instance: instance.similarity, reverse=True)
         return search
 
 class VideoView(generic.DetailView):
@@ -53,6 +58,10 @@ class VideoView(generic.DetailView):
 class PlaylistView(generic.DetailView):
     model = Playlist
     template_name = 'videos/playlist.html'
+
+class UserView(generic.DetailView):
+    model = User
+    template_name = 'videos/user.html'
 
 class RegisterView(generic.TemplateView):
 	template_name = 'videos/register.html'

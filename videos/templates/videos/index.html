@@ -16,12 +16,17 @@
     {% for video in best_videos_list %}
     {% if video.listed %}
     <div class="column">
+    {% if video.created_by %}
     {% if video.pub_date %}
     <a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}
-    {% else %}
+    {% elif video.videos %}
     <a href="{% url 'videos:playlist' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Playlist: {{ video.title }}
     {% endif %}
-    <br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a></div>
+    <br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a>
+    {% elif video.username %}
+    <a href="{% url 'videos:user' video.id %}">User: {{video.username}}</a>
+    {% endif %}
+    </div>
     {% endif %}
     {% endfor %}
     </div>
