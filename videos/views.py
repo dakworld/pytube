@@ -44,7 +44,6 @@ class SearchView(generic.ListView):
             Max(TrigramSimilarity('playlist__title', query))
             ))
         search = sorted(chain(videos, playlists, users), key=lambda instance: instance.similarity, reverse=True)
-        print(search)
         return search
 
 class VideoView(generic.DetailView):
