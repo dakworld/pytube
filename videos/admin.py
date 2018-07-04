@@ -1,9 +1,13 @@
 from django.contrib import admin
 
-from .models import Video, Comment, Playlist
+from .models import Video, Comment, Playlist, Subtitle
 
 class CommentInline(admin.TabularInline):
     model = Comment
+    extra = 1
+
+class SubtitleInline(admin.TabularInline):
+    model = Subtitle
     extra = 1
 
 class PlaylistAdmin(admin.ModelAdmin):
@@ -46,7 +50,7 @@ class VideoAdmin(admin.ModelAdmin):
             return False
         return True
     
-    inlines = [CommentInline]
+    inlines = [CommentInline, SubtitleInline]
 
     def save_model(self, request, obj, form, change):
         if not change:

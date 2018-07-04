@@ -27,6 +27,11 @@ class Playlist(models.Model):
     def __str__(self):
         return self.title
 
+class Subtitle(models.Model):
+    subtitle_file = models.FileField(upload_to='uploads/videos/subtitles/')
+    language = models.CharField(max_length=5)
+    video = models.ForeignKey(User, on_delete=models.CASCADE)
+
 class Comment(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
