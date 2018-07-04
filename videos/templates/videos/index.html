@@ -26,7 +26,6 @@
     {% elif video.username %}
     <div class="column" style="align-content: center;"><a href="{% url 'videos:user' video.id %}">User: {{video.username}}</a></div>
     {% endif %}
-    {% endif %}
     {% endfor %}
     </div>
 {% else %}
