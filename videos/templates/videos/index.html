@@ -23,7 +23,7 @@
     <a href="{% url 'videos:playlist' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Playlist: {{ video.title }}
     {% endif %}
     <br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a>
-    {% elif video.username %}
+    {% else %}
     <a href="{% url 'videos:user' video.id %}">User: {{video.username}}</a>
     {% endif %}
     </div>
