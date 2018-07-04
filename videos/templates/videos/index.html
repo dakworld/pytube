@@ -24,7 +24,7 @@
     <br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a>
     </div>
     {% elif video.username %}
-    <div class="column" style="vertical-align: middle; text-align: center; font-size: 150%;"><a href="{% url 'videos:user' video.id %}">User: {{video.username}}</a></div>
+    <div class="column" style="vertical-align: middle; text-align: center; font-size: 150%; line-height: 200px;"><a href="{% url 'videos:user' video.id %}">User: {{video.username}}</a></div>
     {% endif %}
     {% endfor %}
     </div>
