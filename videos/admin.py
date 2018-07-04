@@ -37,7 +37,7 @@ class PlaylistAdmin(admin.ModelAdmin):
     
     def save_model(self, request, obj, form, change):
         if not change:
-            obj.created_by = request.user
+            request.user.video_set.add(obj)
         obj.save()
 
 class VideoAdmin(admin.ModelAdmin):
@@ -68,7 +68,7 @@ class VideoAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if not change:
-            obj.created_by = request.user
+            request.user.video_set.add(obj)
         obj.save()
 
 admin.site.register(Playlist, PlaylistAdmin)
