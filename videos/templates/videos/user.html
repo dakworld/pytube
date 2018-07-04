@@ -13,9 +13,9 @@
 <div style="height: 30;"></div>
 <h1 style="text-align: center;">{{ user.username }}</h1>
 <h3 style="text-align: center;"><em>Joined on: {{ user.date_joined }}</em></h3>
-{% if user.video %}
+{% if user.video_set %}
     <div class = "row">
-    {% for video in user.video.all %}
+    {% for video in user.video_set.all %}
     {% if video.listed %}
     <div class="column"><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}<br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a></div>
     {% endif %}
