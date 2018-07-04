@@ -40,7 +40,8 @@ class SearchView(generic.ListView):
         users = User.objects.annotate(similarity=Greatest(
             TrigramSimilarity('username', query), 
             TrigramSimilarity('email', query),
-            Max(TrigramSimilarity('video_set__title', query))
+            Max(TrigramSimilarity('video__title', query),
+            Max(TrigramSimilarity('playlist__title', query))
             ))
         search = sorted(chain(videos, playlists, users), key=lambda instance: instance.similarity, reverse=True)
         return search
