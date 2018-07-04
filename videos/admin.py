@@ -57,6 +57,5 @@ class VideoAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         obj.save()
 
-admin.site.register(Comment)
 admin.site.register(Playlist, PlaylistAdmin)
 admin.site.register(Video, VideoAdmin)
