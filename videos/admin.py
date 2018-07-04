@@ -28,6 +28,13 @@ class PlaylistAdmin(admin.ModelAdmin):
             return False
         return True
     
+    def get_queryset(self, request):
+        qs = super(PlaylistAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(created_by=request.user)
+    
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
@@ -39,6 +46,13 @@ class VideoAdmin(admin.ModelAdmin):
         ('Video Information', {'fields': ['title', 'uploader', 'description', 'listed']}),
         ('Files', {'fields': ['video_file', 'thumbnail']}),
     ]
+
+    def get_queryset(self, request):
+        qs = super(VideoAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(created_by=request.user)
 
     def has_change_permission(self, request, obj=None):
         if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
