@@ -17,7 +17,7 @@
     <div class = "row">
     {% for video in playlist.videos.all %}
     {% if video.listed %}
-    <div class="column"><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}<br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a></div>
+    <div class="column" style="vertical-align: middle; text-align: center; align-content: center; align-items: center;"><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}<br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a></div>
     {% endif %}
     {% endfor %}
     </div>
