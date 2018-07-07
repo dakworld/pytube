@@ -13,6 +13,13 @@
 <div style="height: 30;"></div>
 <h1 style="text-align: center;">{{ user.username }}</h1>
 <h3 style="text-align: center;"><em>Joined on: {{ user.date_joined }}</em></h3>
+{% if user.subscriptionmanager_set %}
+    <div class = "row">
+    {% for subscription in user.subscriptionmanager_set.all %}
+    <div class="column" style="vertical-align: middle; text-align: center; align-content: center; align-items: center; height: 75;"><a href="{% url 'videos:subscribe' subscription.id %}">Subscribe to {{ subscription.title }}</a></div>
+    {% endfor %}
+    </div>
+{% endif %}
 {% if user.video_set %}
     <div class = "row">
     {% for video in user.video_set.all %}

@@ -9,7 +9,7 @@ from django.contrib.postgres.search import TrigramSimilarity
 from itertools import chain
 from django.contrib.auth.models import User, Group
 
-from .models import Video, Comment, Playlist
+from .models import Video, Comment, Playlist, SubscriptionManager
 
 class IndexView(generic.ListView):
     template_name = 'videos/index.html'
@@ -64,8 +64,18 @@ class UserView(generic.DetailView):
     model = User
     template_name = 'videos/user.html'
 
+class SubscriptionView(generic.DetailView):
+    model = SubscriptionManager
+    template_name = 'videos/subscribe.html'
+
 class RegisterView(generic.TemplateView):
 	template_name = 'videos/register.html'
+
+def subcribe(request, pk):
+    subscription = get_object_or_404(SubscriptionManager, pk=pk)
+    subscription.email.append(request.POST['email'])
+    subscription.save()
+    return HttpResponseRedirect(reverse('videos:user', args=(subscription.created_by.id,)))
 
 def rate(request, video_id):
     video = get_object_or_404(Video, pk=video_id)
