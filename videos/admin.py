@@ -58,7 +58,7 @@ class SubscriptionManagerAdmin(admin.ModelAdmin):
         return True
     
     def get_queryset(self, request):
-        qs = super(PlaylistAdmin, self).get_queryset(request)
+        qs = super(SubscriptionManagerAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
         else:
