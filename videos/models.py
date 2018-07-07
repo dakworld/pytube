@@ -1,12 +1,12 @@
 from django.db import models
-from django.contrib.postgres import fields as postgres.fields
+from django.contrib.postgres import fields as postgres_fields
 from django.core import mail
 from django.contrib.auth.models import User
 
 class SubscriptionManager(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
-    emails = postgres.fields.ArrayField(models.EmailField(max_length=60))
+    emails = postgres_fields.ArrayField(models.EmailField(max_length=60))
     template_subject = models.CharField(max_length=50)
     template_message = models.TextField(max_length=1000)
     def __str__(self):
