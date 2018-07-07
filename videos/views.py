@@ -71,7 +71,7 @@ class SubscriptionView(generic.DetailView):
 class RegisterView(generic.TemplateView):
 	template_name = 'videos/register.html'
 
-def subcribe(request, pk):
+def subscribe(request, pk):
     subscription = get_object_or_404(SubscriptionManager, pk=pk)
     subscription.email.append(request.POST['email'])
     subscription.save()

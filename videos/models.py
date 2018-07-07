@@ -20,7 +20,7 @@ class SubscriptionManager(models.Model):
             'title': video.title, 
             'description': video.description, 
             'date': video.pub_date, 
-            'url': '/videos/'+str(video.id),
+            'url': 'http://35.231.209.206//videos/'+str(video.id),
         }
         self.send_mail(self.template_subject.format(**kwargs), self.template_message.format(**kwargs))
 
