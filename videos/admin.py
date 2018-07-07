@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Video, Comment, Playlist, Subtitle
+from .models import Video, Comment, Playlist, Subtitle, SubscriptionManager
 
 class CommentInline(admin.TabularInline):
     model = Comment
@@ -104,5 +104,6 @@ class VideoAdmin(admin.ModelAdmin):
                 manager.add_video_and_send_email(obj)
         obj.save()
 
+admin.site.register(SubscriptionManager, SubscriptionManagerAdmin)
 admin.site.register(Playlist, PlaylistAdmin)
 admin.site.register(Video, VideoAdmin)
