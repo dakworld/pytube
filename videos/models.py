@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib import postgres
+from django.contrib.postgres import fields as postgres.fields
 from django.core import mail
 from django.contrib.auth.models import User
 
