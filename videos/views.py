@@ -73,7 +73,7 @@ class RegisterView(generic.TemplateView):
 
 def subscribe(request, pk):
     subscription = get_object_or_404(SubscriptionManager, pk=pk)
-    subscription.email.append(request.POST['email'])
+    subscription.emails.append(request.POST['email'])
     subscription.save()
     return HttpResponseRedirect(reverse('videos:user', args=(subscription.created_by.id,)))
 
