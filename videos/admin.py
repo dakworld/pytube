@@ -40,11 +40,42 @@ class PlaylistAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         obj.save()
 
+class SubscriptionManagerAdmin(admin.ModelAdmin):
+
+    fieldsets = [
+        ('Information', {'fields': ['title']}),
+        ('Email Messages', {'fields': ['template_subject', 'template_message']}),
+    ]
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
+        return True
+    
+    def get_queryset(self, request):
+        qs = super(PlaylistAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(created_by=request.user)
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        obj.save()
+
+
 class VideoAdmin(admin.ModelAdmin):
 
     fieldsets = [
         ('Video Information', {'fields': ['title', 'uploader', 'description', 'listed']}),
         ('Files', {'fields': ['video_file', 'thumbnail']}),
+        ('Subscription Managment', {'fields': ['subscription_manager']}),
     ]
 
     def get_queryset(self, request):
@@ -69,6 +100,8 @@ class VideoAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
+            for manager in obj.subscription_manager.all():
+                manager.add_video_and_send_email(obj)
         obj.save()
 
 admin.site.register(Playlist, PlaylistAdmin)
