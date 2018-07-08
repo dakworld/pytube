@@ -21,7 +21,7 @@
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 <video src="/{{video.video_file}}" style="width:640px;height:360px;" controls> 
 {% for track in video.subtitle_set.all %}
-<track src="{{track.subtitles_file}}" label="{{track.language}}" kind="subtitles" srclang="{{track.language}}" />
+<track src="{{track.subtitle_file}}" label="{{track.language}}" kind="subtitles" srclang="{{track.language}}" />
 {% endfor %}
 </video>
 <h4 style="color: plum;">Views: ({{ video.views }}), Rating: ( {{ video.up_votes }} )</h4>
