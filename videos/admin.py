@@ -101,10 +101,9 @@ class VideoAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
-            obj.save()
-            for manager in obj.subscription_manager.all():
-                manager.add_video_and_send_email(obj)
         obj.save()
+        for manager in obj.subscription_manager.all():
+            manager.add_video_and_send_email(obj)
 
 admin.site.register(SubscriptionManager, SubscriptionManagerAdmin)
 admin.site.register(Playlist, PlaylistAdmin)
