@@ -12,7 +12,7 @@ class SubscriptionManager(models.Model):
     def __str__(self):
         return self.created_by.username + ':' + self.title
     def send_mail(self, subject, body):
-        mail.send_mail(subject, body, str(self.created_by.username) + '@pytube.localhost', list(self.emails))
+        mail.send_mail(subject, body, 'subscriptions@vidshare.net', list(self.emails))
     def add_video_and_send_email(self, video):
         kwargs = {
             'name': self.title,
@@ -20,14 +20,25 @@ class SubscriptionManager(models.Model):
             'title': video.title, 
             'description': video.description, 
             'date': video.pub_date, 
-            'url': 'http://35.231.209.206/videos/'+str(video.id),
+            'url': 'https://vidshare.net/videos/'+str(video.id),
         }
         self.send_mail(self.template_subject.format(**kwargs), self.template_message.format(**kwargs))
+
+    def add_stream_and_send_email(self, video):
+        kwargs = {
+            'name': self.title,
+            'username': self.created_by.username,
+            'title': video.title, 
+            'description': video.description, 
+            'date': video.pub_date, 
+            'url': 'https://vidshare.net/stream/'+str(video.id),
+        }
+        self.send_mail(self.template_subject.format(**kwargs), self.template_message.format(**kwargs))
+
 
 class Video(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=500)
-    uploader = models.CharField(max_length=25)
     subscription_manager = models.ManyToManyField(SubscriptionManager)
     up_votes = models.IntegerField(default=1)
     views = models.IntegerField(default=1)
@@ -37,7 +48,23 @@ class Video(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True, editable=False)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
-        return self.uploader + ':' + self.title
+        return self.created_by.username + ':' + self.title
+    def was_published_recently(self):
+        return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+
+class LiveStream(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField(max_length=500)
+    subscription_manager = models.ManyToManyField(SubscriptionManager)
+    up_votes = models.IntegerField(default=1)
+    views = models.IntegerField(default=1)
+    stream_key = models.CharField(max_length=50)
+    thumbnail = models.FileField(upload_to='uploads/videos/thumbnails/')
+    listed = models.BooleanField(default=True)
+    pub_date = models.DateTimeField(auto_now_add=True, editable=False)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.created_by.username + ':' + self.title
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
 
@@ -58,6 +85,26 @@ class Subtitle(models.Model):
 
 class Comment(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    name = models.CharField(max_length=30)
+    message = models.TextField(max_length=200)
+    pub_date = models.DateTimeField(auto_now_add=True, editable=False)
+    def __str__(self):
+        return self.name + '::' + str(self.pub_date)
+    def was_published_recently(self):
+        return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+
+class StreamComment(models.Model):
+    video = models.ForeignKey(LiveStream, on_delete=models.CASCADE)
+    name = models.CharField(max_length=30)
+    message = models.TextField(max_length=200)
+    pub_date = models.DateTimeField(auto_now_add=True, editable=False)
+    def __str__(self):
+        return self.name + '::' + str(self.pub_date)
+    def was_published_recently(self):
+        return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+
+class SubComment(models.Model):
+    video = models.ForeignKey(LiveStream, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
     message = models.TextField(max_length=200)
     pub_date = models.DateTimeField(auto_now_add=True, editable=False)

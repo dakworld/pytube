@@ -9,7 +9,7 @@ from django.contrib.postgres.search import TrigramSimilarity
 from itertools import chain
 from django.contrib.auth.models import User, Group
 
-from .models import Video, Comment, Playlist, SubscriptionManager
+from .models import *
 
 class IndexView(generic.ListView):
     template_name = 'videos/index.html'
@@ -17,7 +17,10 @@ class IndexView(generic.ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        return Video.objects.annotate(order=F('views') * F('up_votes')).order_by('-order')
+        videos = Video.objects.annotate(order=F('views') * F('up_votes'))
+        streams = LiveStream.objects.annotate(order=F('views') * F('up_votes'))
+        #users = User.objects.annotate(order=Max(Count('subscription_manager__emails')))
+        return sorted(chain(videos, streams), key=lambda instance: instance.order, reverse=True)
 
 class SearchView(generic.ListView):
     template_name = 'videos/index.html'
@@ -27,6 +30,12 @@ class SearchView(generic.ListView):
     def get_queryset(self):
         query = self.request.GET['search']
         videos = Video.objects.annotate(similarity=Greatest(
+            TrigramSimilarity('title', query), 
+            TrigramSimilarity('uploader', query),
+            TrigramSimilarity('description', query),
+            Max(TrigramSimilarity('comment__message', query))
+            ))
+        streams = LiveStream.objects.annotate(similarity=Greatest(
             TrigramSimilarity('title', query), 
             TrigramSimilarity('uploader', query),
             TrigramSimilarity('description', query),
@@ -43,7 +52,7 @@ class SearchView(generic.ListView):
             Max(TrigramSimilarity('video__title', query)),
             Max(TrigramSimilarity('playlist__title', query))
             ))
-        search = sorted(chain(videos, playlists, users), key=lambda instance: instance.similarity, reverse=True)
+        search = sorted(chain(videos, streams, playlists, users), key=lambda instance: instance.similarity, reverse=True)
         return search
 
 class VideoView(generic.DetailView):
@@ -63,6 +72,10 @@ class PlaylistView(generic.DetailView):
 class UserView(generic.DetailView):
     model = User
     template_name = 'videos/user.html'
+
+class StreamView(generic.DetailView):
+    model = LiveStream
+    template_name = 'videos/livestream.html'
 
 class SubscriptionView(generic.DetailView):
     model = SubscriptionManager
@@ -93,6 +106,23 @@ def comment(request, video_id):
     video.comment_set.create(name = request.POST['name'], message = request.POST['comment_text'])
     video.save()
     return HttpResponseRedirect(reverse('videos:video', args=(video.id,)))
+
+def streamrate(request, stream_id):
+    video = get_object_or_404(LiveStream, pk=stream_id)
+    if request.POST['choice'] == 'up':
+        video.up_votes += 1
+        video.save()
+    elif request.POST['choice'] == 'down':
+        if video.up_votes >= 1:
+            video.up_votes -= 1
+            video.save()
+    return HttpResponseRedirect(reverse('videos:stream', args=(video.id,)))
+
+def streamcomment(request, stream_id):
+    video = get_object_or_404(LiveStream, pk=stream_id)
+    video.stream_comment_set.create(name = request.POST['name'], message = request.POST['comment_text'])
+    video.save()
+    return HttpResponseRedirect(reverse('videos:stream', args=(video.id,)))
 
 def createuser(request):
     user = User.objects.create_user(request.POST['name'], request.POST['email'], request.POST['password'])

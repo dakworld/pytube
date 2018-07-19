@@ -1,0 +1,76 @@
+{% load static %}
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
+</head>
+
+<body>
+<div class='topbar'>
+<strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}"><img src="{% static 'logo.png' %}" height="50" width="100" alt="VidShare"></a></strong>
+<form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
+<input type="text" id="search" name="search" />
+<input type="submit" value="Search" />
+</form>
+</div>
+<div style="height: 50;"></div>
+<h1 style="text-align: center;">{{ livestream.title }}</h1>
+<h3 style="text-align: center;"><em>created by: <a href="{% url 'videos:user' livestream.created_by.id %}">{{ livestream.created_by.username }}</a> on {{ livestream.pub_date }}</em></h3>
+<br>
+<table>
+<tr>
+<td>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<video id="video" style="width:640px;height:360px;" controls> 
+</video>
+<h4 style="color: plum;">Views: ({{ livestream.views }}), Rating: ( {{ livestream.up_votes }} )</h4>
+<form action="{% url 'videos:streamrate' livestream.id %}" method="post">
+{% csrf_token %}
+<input type="radio" name="choice" id="up" value="up" />
+<label for="up"><img src="{% static "up_vote.png" %}" style="width:40px;height:40px;"></label>
+<input type="radio" name="choice" id="down" value="down" />
+<label for="down"><img src="{% static "down_vote.png" %}" style="width:40px;height:40px;"></label><br>
+<input type="submit" value="Rate" />
+</form>
+<p>{{ livestream.description }}</p>
+<script>
+    var video = document.getElementById('video');
+    if(Hls.isSupported()) {
+      var hls = new Hls();
+      hls.loadSource('http://vidshare.net:8080/hls/{{ livestream.stream_key }}.m3u8');
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED,function() {
+        video.play();
+    });
+   }
+   else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = 'http://vidshare.net:8080/hls/{{ livestream.stream_key }}.m3u8';
+      video.addEventListener('loadedmetadata',function() {
+        video.play();
+      });
+    }
+  </script>
+</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>
+<h3>Add a Comment:</h3>
+<form action="{% url 'videos:streamcomment' livestream.id %}" method="post">
+{% csrf_token %}
+<label for="name">Name: </label>
+<input type="text" name="name" id="name" /><br>
+<textarea name="comment_text" id="comment_text"></textarea><br>
+<input type="submit" value="Post Comment" />
+</form>
+<h3>Comments:</h3>
+<div style="height: 400; overflow: auto;">
+{% for comment in livestream.stream_comment_set.all %}
+    <h4>{{ comment.name }} &lt;<i>{{ comment.pub_date }}</i>&gt;</h4>
+    <blockquote><pre>{{ comment.message }}</pre></blockquote>
+{% endfor %}
+</div>
+</td>
+</tr>
+</table>
+<div class='footer' style="float: right;">
+<a href="/admin">Login</a>&nbsp;|&nbsp;<a href="/register">Register</a>&nbsp;
+</div>
+</body>

@@ -15,6 +15,13 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Email Server
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'mail.vidshare.net'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'subscriptions@vidshare.net'
+EMAIL_HOST_PASSWORD = 'youtubesucks'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -25,14 +32,13 @@ SECRET_KEY = 'j*v(*h9i&+(3v#d0uof8xydkw&d32wrq17v^yg$xo-)+m4rm%4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['10.0.0.10', '76.108.191.243', 'vidshare.net', 'www.vidshare.net', 'localhost', '127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'videos.apps.VideosConfig',
-    'analytics.apps.AnalyticsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,7 +88,7 @@ DATABASES = {
         'NAME': 'pytube',
         'USER': 'pytubeuser',
         'PASSWORD': 'youtubesucks',
-        'HOST': 'localhost',
+        'HOST': '10.0.0.215',
         'PORT': '',
     }
 }
@@ -124,9 +130,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATICFILES_DIRS = [
-    BASE_DIR + '/media/',
-    BASE_DIR + '/uploads/',
-    BASE_DIR + '/static/',
-]
 STATIC_URL = '/uploads/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'uploads/')
+MEDIA_ROOT = BASE_DIR

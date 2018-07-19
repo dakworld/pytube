@@ -3,25 +3,27 @@
 <link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
 </head>
 <body>
-<div class='topbar'>
-<strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}">PyTube</a></strong>
-<form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
-<input type="text" id="search" name="search" />
-<input type="submit" value="Search" />
-</form>
-</div>
-<div style="height: 30;"></div>
+  <div class='topbar'>
+  <strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}"><img src="{% static 'logo.png' %}" height="50" width="100" alt="VidShare"></a></strong>
+  <form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
+  <input type="text" id="search" name="search" />
+  <input type="submit" value="Search" />
+  </form>
+  </div>
+  <div style="height: 50;"></div>
 {% if best_videos_list %}
     <div class = "row">
     {% for video in best_videos_list %}
     {% if video.listed %}
     <div class="column" style="vertical-align: middle; text-align: center; align-content: center; align-items: center;">
-    {% if video.pub_date %}
+    {% if video.video_file %}
     <a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}
+    {% elif video.stream_key %}
+    <a href="{% url 'videos:stream' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Live: {{ video.title }}
     {% elif video.videos %}
     <a href="{% url 'videos:playlist' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Playlist: {{ video.title }}
     {% endif %}
-    <br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a>
+    <br><em style="font-size: 75%;">by: {{ video.created_by.username }}</em></a>
     </div>
     {% elif video.username %}
     <div class="column" style="vertical-align: middle; text-align: center; font-size: 150%; line-height: 200px;"><a href="{% url 'videos:user' video.id %}">User: {{video.username}}</a></div>
