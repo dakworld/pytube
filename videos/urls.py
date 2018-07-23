@@ -17,5 +17,8 @@ urlpatterns = [
     path('playlists/<int:pk>/', views.PlaylistView.as_view(), name='playlist'),
     path('videos/<int:pk>/', views.VideoView.as_view(), name='video'),
     path('videos/<int:video_id>/rate/', views.rate, name='rate'),
-    path('videos/<int:video_id>/comment/', views.comment, name='comment')
+    path('videos/<int:video_id>/comment/', views.comment, name='comment'),
+    path('podcasts/<int:pk>/', views.PodcastView.as_view(), name='podcast'),
+    path('podcasts/<int:podcast_id>/rate/', views.podcastrate, name='podcastrate'),
+    path('podcasts/<int:podcast_id>/comment/', views.podcastcomment, name='podcastcomment'),
 ]

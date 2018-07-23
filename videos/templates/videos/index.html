@@ -17,7 +17,9 @@
     {% if video.listed %}
     <div class="column" style="vertical-align: middle; text-align: center; align-content: center; align-items: center;">
     {% if video.video_file %}
-    <a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}
+    <a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Video: {{ video.title }}
+    {% elif video.audio_file %}
+    <a href="{% url 'videos:podcast' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Podcast: {{ video.title }}
     {% elif video.stream_key %}
     <a href="{% url 'videos:stream' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Live: {{ video.title }}
     {% elif video.videos %}

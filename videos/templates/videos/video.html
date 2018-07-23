@@ -40,10 +40,14 @@
 <h3>Add a Comment:</h3>
 <form action="{% url 'videos:comment' video.id %}" method="post">
 {% csrf_token %}
-<label for="name">Name: </label>
-<input type="text" name="name" id="name" /><br>
-<textarea name="comment_text" id="comment_text"></textarea><br>
+<!--<label for="name">Name: </label>-->
+<input type="text" name="name" id="name" value="{{ request.user.username }}" hidden />
+<textarea style="display: block; height: 100px; width: 100%" name="comment_text" id="comment_text"></textarea><br><br>
+{% if request.user.is_authenticated %}
 <input type="submit" value="Post Comment" />
+{% else %}
+<div style="background-color: grey; border-radius: 20px;">&nbsp;&nbsp;&nbsp;<a href="/admin">Login</a> or <a href="/register">Register</a> to comment.</div>
+{% endif %}
 </form>
 <h3>Comments:</h3>
 <div style="height: 400; overflow: auto;">

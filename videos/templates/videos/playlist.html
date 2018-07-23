@@ -12,12 +12,21 @@
     </div>
     <div style="height: 50;"></div>
 <h1 style="text-align: center;">{{ playlist.title }}</h1>
-<h3 style="text-align: center;"><em>created by: {{ playlist.uploader }}</em></h3>
-{% if playlist.videos %}
+<h3 style="text-align: center;"><em>created by: {{ playlist.created_by.username }}</em></h3>
+{% if best_videos_list %}
     <div class = "row">
-    {% for video in playlist.videos.all %}
+    {% for video in best_videos_list %}
     {% if video.listed %}
-    <div class="column" style="vertical-align: middle; text-align: center; align-content: center; align-items: center;"><a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>{{ video.title }}<br><em style="font-size: 75%;">by: {{ video.uploader }}</em></a></div>
+    <div class="column" style="vertical-align: middle; text-align: center; align-content: center; align-items: center;">
+    {% if video.video_file %}
+    <a href="{% url 'videos:video' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Video: {{ video.title }}
+    {% elif video.audio_file %}
+    <a href="{% url 'videos:podcast' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Podcast: {{ video.title }}
+    {% elif video.stream_key %}
+    <a href="{% url 'videos:stream' video.id %}"><img src="/{{ video.thumbnail }}" width="192" height="180"/><br>Live: {{ video.title }}
+    {% endif %}
+    <br><em style="font-size: 75%;">by: {{ video.created_by.username }}</em></a>
+    </div>
     {% endif %}
     {% endfor %}
     </div>
