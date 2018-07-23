@@ -36,7 +36,7 @@ class SubscriptionManager(models.Model):
             'content_type': 'podcast',
             'description': video.description, 
             'date': video.pub_date, 
-            'url': 'https://vidshare.net/videos/'+str(video.id),
+            'url': 'https://vidshare.net/podcasts/'+str(video.id),
         }
         self.send_mail(self.template_subject.format(**kwargs), self.template_message.format(**kwargs))
 
