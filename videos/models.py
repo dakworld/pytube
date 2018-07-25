@@ -2,11 +2,30 @@ from django.db import models
 from django.contrib.postgres import fields as postgres_fields
 from django.core import mail
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(max_length=500, blank=True)
+    profile_pic = models.FileField(upload_to='uploads/videos/profile_pics/')
+
+
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            Profile.objects.create(user=instance)
+
+    @receiver(post_save, sender=User)
+    def save_user_profile(sender, instance, **kwargs):
+        instance.profile.save()
 
 class SubscriptionManager(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     emails = postgres_fields.ArrayField(models.EmailField(max_length=60))
+    subscribers = models.IntegerField(default=0)
     template_subject = models.CharField(max_length=50)
     template_message = models.TextField(max_length=1000)
     
@@ -26,6 +45,7 @@ class SubscriptionManager(models.Model):
             'date': video.pub_date, 
             'url': 'https://vidshare.net/videos/'+str(video.id),
         }
+        self.subscribers=len(self.emails)
         self.send_mail(self.template_subject.format(**kwargs), self.template_message.format(**kwargs))
 
     def add_podcast_and_send_email(self, video):
@@ -38,6 +58,7 @@ class SubscriptionManager(models.Model):
             'date': video.pub_date, 
             'url': 'https://vidshare.net/podcasts/'+str(video.id),
         }
+        self.subscribers=len(self.emails)
         self.send_mail(self.template_subject.format(**kwargs), self.template_message.format(**kwargs))
 
     def add_stream_and_send_email(self, video):
@@ -50,6 +71,7 @@ class SubscriptionManager(models.Model):
             'date': video.pub_date, 
             'url': 'https://vidshare.net/stream/'+str(video.id),
         }
+        self.subscribers=len(self.emails)
         self.send_mail(self.template_subject.format(**kwargs), self.template_message.format(**kwargs))
 
 class Video(models.Model):

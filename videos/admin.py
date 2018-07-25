@@ -1,5 +1,6 @@
 from django.contrib import admin
-
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 from .models import *
 
 class CommentInline(admin.TabularInline):
@@ -194,6 +195,48 @@ class LiveStreamAdmin(admin.ModelAdmin):
         form.base_fields['subscription_manager'].queryset = request.user.subscriptionmanager_set
         return form
 
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = 'Profile'
+    fk_name = 'user'
+
+class CustomUserAdmin(UserAdmin):
+    inlines = (ProfileInline, )
+    admin_fieldsets = [(None, {'fields': ('username', 'password')}), ('Personal info', {'fields': ('first_name', 'last_name', 'email')}), ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}), ('Important dates', {'fields': ('last_login', 'date_joined')})]
+    restricted_fieldsets = [(None, {'fields': ('username', 'password')}), ('Personal info', {'fields': ('first_name', 'last_name', 'email')})]
+
+    def get_inline_instances(self, request, obj=None):
+        if not obj:
+            return list()
+        return super(CustomUserAdmin, self).get_inline_instances(request, obj)
+
+    def get_queryset(self, request):
+        qs = super(CustomUserAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(id=request.user.id)
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj != request.user and not request.user.is_superuser:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj != request.user and not request.user.is_superuser:
+            return False
+        return True
+
+    def get_fieldsets(self, request, obj=None):
+        if request.user.is_superuser:
+            fieldsets = self.admin_fieldsets
+        else:
+            fieldsets = self.restricted_fieldsets
+        return fieldsets
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
 admin.site.register(SubscriptionManager, SubscriptionManagerAdmin)
 admin.site.register(Playlist, PlaylistAdmin)
 admin.site.register(Video, VideoAdmin)

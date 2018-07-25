@@ -1,6 +1,9 @@
 .column a {
     color: lightpink;
 }
+a {
+    color: #ffbeed;
+}
 body {
     background: blue url("images/background.gif") no-repeat;
     background-size: cover;

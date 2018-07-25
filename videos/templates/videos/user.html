@@ -13,6 +13,20 @@
     <div style="height: 50;"></div>
 <h1 style="text-align: center;">{{ user.username }}</h1>
 <h3 style="text-align: center;"><em>Joined on: {{ user.date_joined }}</em></h3>
+<center>
+<table>
+<tr>
+<td>
+<img src="/{{ user.profile.profile_pic }}" height=200 />
+</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td colspan=2>
+<p><pre>{{ user.profile.bio }}</pre></p>
+</td>
+</tr>
+</table>
+</center>
+<br><br>
 {% if user.subscriptionmanager_set %}
     <div class = "row">
     {% for subscription in user.subscriptionmanager_set.all %}

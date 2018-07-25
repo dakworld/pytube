@@ -3,8 +3,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from django.db.models.functions import Greatest
-from django.db.models import Max, Min, F
+from django.db.models.functions import Greatest, Coalesce
+from django.db.models import Max, Min, F, Count, Sum
 from django.contrib.postgres.search import TrigramSimilarity
 from itertools import chain
 from django.contrib.auth.models import User, Group
@@ -17,12 +17,16 @@ class IndexView(generic.ListView):
     paginate_by = 20
 
     def get_queryset(self):
+        qas = SubscriptionManager.objects.all().extra(select={'length':'cardinality(emails)'})
+        for o in qas:
+            o.subscribers = len(o.emails)
+            o.save()
         streams = LiveStream.objects.annotate(order=F('views') * F('up_votes'))
         videos = Video.objects.annotate(order=F('views') * F('up_votes'))
         playlists = Playlist.objects.annotate(order=Min('videos__views') * Max('videos__up_votes'))
         podcasts = Podcast.objects.annotate(order=F('views') * F('up_votes'))
-        #users = User.objects.annotate(order=Max(Count('subscription_manager__emails')))
-        return sorted(chain(podcasts, playlists, videos, streams), key=lambda instance: instance.order, reverse=True)
+        users = User.objects.annotate(order=Coalesce(Sum(F('subscriptionmanager__subscribers')), 0))
+        return sorted(chain(podcasts, playlists, videos, streams, users), key=lambda instance: instance.order, reverse=True)
 
 class SearchView(generic.ListView):
     template_name = 'videos/index.html'

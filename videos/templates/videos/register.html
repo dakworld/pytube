@@ -20,7 +20,31 @@
 <td><input type="email" id="email" name="email" /></td></tr>
 <tr><td><label for="password">Password: </label>
 <td><input type="password" id="password" name="password" /></td></tr>
-<tr style="align-items: center;"><input type="submit" value="Create User" /></tr>
+<tr><td><label for="pass2">Confirm Password:</label></td>
+<td><input name="pass2" id="pass2" onkeyup="checkPass(); return false;" type="password"></td></tr>
+<tr style="align-items: center; text-align: center;"><td colspan=2><input type="submit" id="submit" value="Create User" disabled /><span id="confirmMessage" class="confirmMessage"></span></td></tr>
 </form>
+<script>
+function checkPass()
+{
+	var pass1 = document.getElementById('password');
+	var pass2 = document.getElementById('pass2');
+	var message = document.getElementById('confirmMessage');
+	var submitbutton = document.getElementById('submit');
+	var goodColor = "#66cc66";
+	var badColor = "#ff6666";
+	if(pass1.value == pass2.value){
+		pass2.style.backgroundColor = goodColor;
+		message.style.color = goodColor;
+		message.innerHTML = "Passwords Match!";
+		submitbutton.disabled = false;
+	}else{
+		pass2.style.backgroundColor = badColor;
+		message.style.color = badColor;
+		message.innerHTML = "Passwords Do Not Match!";
+		submitbutton.disabled = true;
+	}
+}
+</script>
 </table>
 </body>

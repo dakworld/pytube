@@ -12,7 +12,7 @@
     </div>
     <div style="height: 50;"></div>
 <h1 style="text-align: center;">{{ playlist.title }}</h1>
-<h3 style="text-align: center;"><em>created by: {{ playlist.created_by.username }}</em></h3>
+<h3 style="text-align: center;"><em>created by: <a href="{% url 'videos:user' playlist.created_by.id %}">{{ playlist.created_by.username }}</a></em></h3>
 {% if best_videos_list %}
     <div class = "row">
     {% for video in best_videos_list %}
