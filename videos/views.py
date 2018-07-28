@@ -17,16 +17,35 @@ class IndexView(generic.ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        qas = SubscriptionManager.objects.all().extra(select={'length':'cardinality(emails)'})
-        for o in qas:
-            o.subscribers = len(o.emails)
-            o.save()
         streams = LiveStream.objects.annotate(order=F('views') * F('up_votes'))
         videos = Video.objects.annotate(order=F('views') * F('up_votes'))
         playlists = Playlist.objects.annotate(order=Min('videos__views') * Max('videos__up_votes'))
+        blogs = Blog.objects.annotate(order=F('views') * F('up_votes'))
         podcasts = Podcast.objects.annotate(order=F('views') * F('up_votes'))
-        users = User.objects.annotate(order=Coalesce(Sum(F('subscriptionmanager__subscribers')), 0))
-        return sorted(chain(podcasts, playlists, videos, streams, users), key=lambda instance: instance.order, reverse=True)
+        users = User.objects.annotate(order=Coalesce(Sum(F('subscriptionmanager__subscription')), 0))
+        return sorted(chain(podcasts, playlists, blogs, videos, streams, users), key=lambda instance: instance.order, reverse=True)
+
+class ClassView(generic.ListView):
+    template_name = 'videos/index.html'
+    context_object_name = 'best_videos_list'
+    paginate_by = 20
+
+    def get_queryset(self):
+        streams = LiveStream.objects.annotate(order=F('views') * F('up_votes'))
+        videos = Video.objects.annotate(order=F('views') * F('up_votes'))
+        playlists = Playlist.objects.annotate(order=Min('videos__views') * Max('videos__up_votes'))
+        blogs = Blog.objects.annotate(order=F('views') * F('up_votes'))
+        podcasts = Podcast.objects.annotate(order=F('views') * F('up_votes'))
+        users = User.objects.annotate(order=Coalesce(Sum(F('subscriptionmanager__subscription')), 0))
+        dmap = {
+                'streams': streams,
+                'users': users,
+                'podcasts': podcasts,
+                'posts': blogs,
+                'videos': videos,
+                'playlists': playlists,
+            }
+        return dmap[self.kwargs['dtype']].order_by('-order')
 
 class SearchView(generic.ListView):
     template_name = 'videos/index.html'
@@ -47,6 +66,12 @@ class SearchView(generic.ListView):
             TrigramSimilarity('description', query),
             Max(TrigramSimilarity('podcastcomment__message', query))
             ))
+        blogs = Blog.objects.annotate(similarity=Greatest(
+            TrigramSimilarity('title', query), 
+            TrigramSimilarity('created_by__username', query),
+            TrigramSimilarity('text', query),
+            Max(TrigramSimilarity('streamcomment__message', query))
+            ))
         streams = LiveStream.objects.annotate(similarity=Greatest(
             TrigramSimilarity('title', query), 
             TrigramSimilarity('created_by__username', query),
@@ -64,12 +89,22 @@ class SearchView(generic.ListView):
             Max(TrigramSimilarity('video__title', query)),
             Max(TrigramSimilarity('playlist__title', query))
             ))
-        search = sorted(chain(videos, streams, podcasts, playlists, users), key=lambda instance: instance.similarity, reverse=True)
+        search = sorted(chain(videos, blogs, streams, podcasts, playlists, users), key=lambda instance: instance.similarity, reverse=True)
         return search
 
 class VideoView(generic.DetailView):
     model = Video
     template_name = 'videos/video.html'
+    def get_context_data(self, **kwargs):
+        context = super(generic.DetailView, self).get_context_data(**kwargs)
+        obj = self.get_object()
+        obj.views = obj.views + 1
+        obj.save()
+        return context
+
+class BlogView(generic.DetailView):
+    model = Blog
+    template_name = 'videos/blog.html'
     def get_context_data(self, **kwargs):
         context = super(generic.DetailView, self).get_context_data(**kwargs)
         obj = self.get_object()
@@ -99,6 +134,17 @@ class PlaylistView(generic.DetailView):
         context['best_videos_list'] = sorted(chain(videos, streams, podcasts), key=lambda instance: instance.order, reverse=True)
         return context
 
+class UserSpecView(generic.DetailView):
+    model = User
+    template_name = 'videos/userspecs.html'
+    def get_context_data(self, **kwargs):
+        context = super(generic.DetailView, self).get_context_data(**kwargs)
+        obj = self.get_object()
+        context['content_count'] = obj.video_set.count() + obj.podcast_set.count() + obj.livestream_set.count() + obj.blog_set.count()
+        context['total_views'] = sum([o.views for o in chain(obj.video_set.all(), obj.podcast_set.all(), obj.livestream_set.all(), obj.blog_set.all())])
+        context['total_votes'] = sum([o.up_votes for o in chain(obj.video_set.all(), obj.podcast_set.all(), obj.livestream_set.all(), obj.blog_set.all())])
+        context['total_subscribers'] = sum([len(o.subscription_set.all()) for o in obj.subscriptionmanager_set.all()])
+        return context
 
 class UserView(generic.DetailView):
     model = User
@@ -109,8 +155,9 @@ class UserView(generic.DetailView):
         streams = obj.livestream_set.annotate(order=F('views') * F('up_votes'))
         videos = obj.video_set.annotate(order=F('views') * F('up_votes'))
         podcasts = obj.podcast_set.annotate(order=F('views') * F('up_votes'))
+        blogs = obj.blog_set.annotate(order=F('views') * F('up_votes'))
         playlists = obj.playlist_set.annotate(order=Min('videos__views') * Max('videos__up_votes'))
-        context['best_videos_list'] = sorted(chain(videos, streams, podcasts, playlists), key=lambda instance: instance.order, reverse=True)
+        context['best_videos_list'] = sorted(chain(videos, streams, blogs, podcasts, playlists), key=lambda instance: instance.order, reverse=True)
         return context
 
 class StreamView(generic.DetailView):
@@ -123,18 +170,17 @@ class StreamView(generic.DetailView):
         obj.save()
         return context
 
-class SubscriptionView(generic.DetailView):
-    model = SubscriptionManager
-    template_name = 'videos/subscribe.html'
-
 class RegisterView(generic.TemplateView):
 	template_name = 'videos/register.html'
 
 def subscribe(request, pk):
-    subscription = get_object_or_404(SubscriptionManager, pk=pk)
-    subscription.emails.append(request.POST['email'])
-    subscription.save()
-    return HttpResponseRedirect(reverse('videos:user', args=(subscription.created_by.id,)))
+    if request.user.is_authenticated:
+        subscriptionman = get_object_or_404(SubscriptionManager, pk=pk)
+        subscription = Subscription.objects.create(created_by=request.user, subscription_manager=subscriptionman)
+        subscription.save()
+        return HttpResponseRedirect(reverse('videos:user', args=(subscription.created_by.id,)))
+    else:
+        return HttpResponseRedirect(reverse('admin:login'))
 
 def rate(request, video_id):
     video = get_object_or_404(Video, pk=video_id)
@@ -169,6 +215,23 @@ def streamcomment(request, stream_id):
     video.streamcomment_set.create(name = request.POST['name'], message = request.POST['comment_text'])
     video.save()
     return HttpResponseRedirect(reverse('videos:stream', args=(video.id,)))
+
+def blograte(request, post_id):
+    video = get_object_or_404(Blog, pk=post_id)
+    if request.POST['choice'] == 'up':
+        video.up_votes += 1
+        video.save()
+    elif request.POST['choice'] == 'down':
+        if video.up_votes >= 1:
+            video.up_votes -= 1
+            video.save()
+    return HttpResponseRedirect(reverse('videos:post', args=(video.id,)))
+
+def blogcomment(request, post_id):
+    video = get_object_or_404(Blog, pk=post_id)
+    video.blogcomment_set.create(name = request.POST['name'], message = request.POST['comment_text'])
+    video.save()
+    return HttpResponseRedirect(reverse('videos:post', args=(video.id,)))
 
 def podcastrate(request, podcast_id):
     video = get_object_or_404(Podcast, pk=podcast_id)

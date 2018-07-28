@@ -11,6 +11,10 @@ class StreamCommentInline(admin.TabularInline):
     model = StreamComment
     extra = 1
 
+class BlogCommentInline(admin.TabularInline):
+    model = BlogComment
+    extra = 1
+
 class PodcastCommentInline(admin.TabularInline):
     model = PodcastComment
     extra = 1
@@ -48,6 +52,34 @@ class PlaylistAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         obj.save()
 
+class SubscriptionAdmin(admin.ModelAdmin):
+
+    fieldsets = [
+        ('Information', {'fields': ['subscription_manager']}),
+    ]
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
+        return True
+    
+    def get_queryset(self, request):
+        qs = super(SubscriptionAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(created_by=request.user)
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        obj.save()
+
 class SubscriptionManagerAdmin(admin.ModelAdmin):
 
     fieldsets = [
@@ -75,7 +107,6 @@ class SubscriptionManagerAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
-            obj.emails = []
         obj.save()
 
 class VideoAdmin(admin.ModelAdmin):
@@ -108,14 +139,54 @@ class VideoAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
+            for manager in obj.subscription_manager.all():
+                manager.add_video_and_send_email(obj)
         obj.save()
-        for manager in obj.subscription_manager.all():
-            manager.add_video_and_send_email(obj)
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(VideoAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['subscription_manager'].queryset = request.user.subscriptionmanager_set
         return form
+
+class BlogAdmin(admin.ModelAdmin):
+
+    fieldsets = [
+        ('Blog Post Information', {'fields': ['title', 'listed']}),
+        ('Content', {'fields': ['text', 'thumbnail']}),
+        ('Subscription Managment', {'fields': ['subscription_manager']}),
+    ]
+
+    def get_queryset(self, request):
+        qs = super(BlogAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(created_by=request.user)
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.created_by != request.user and not request.user.is_superuser:
+            return False
+        return True
+    
+    inlines = [BlogCommentInline]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+            for manager in obj.subscription_manager.all():
+                manager.add_blog_and_send_email(obj)
+        obj.save()
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(PodcastAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['subscription_manager'].queryset = request.user.subscriptionmanager_set
+        return form
+
 
 class PodcastAdmin(admin.ModelAdmin):
 
@@ -147,9 +218,9 @@ class PodcastAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
+            for manager in obj.subscription_manager.all():
+                manager.add_podcast_and_send_email(obj)
         obj.save()
-        for manager in obj.subscription_manager.all():
-            manager.add_podcast_and_send_email(obj)
     
     def get_form(self, request, obj=None, **kwargs):
         form = super(PodcastAdmin, self).get_form(request, obj, **kwargs)
@@ -186,9 +257,9 @@ class LiveStreamAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
+            for manager in obj.subscription_manager.all():
+                manager.add_stream_and_send_email(obj)
         obj.save()
-        for manager in obj.subscription_manager.all():
-            manager.add_stream_and_send_email(obj)
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(LiveStreamAdmin, self).get_form(request, obj, **kwargs)
@@ -242,3 +313,5 @@ admin.site.register(Playlist, PlaylistAdmin)
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Podcast, PodcastAdmin)
 admin.site.register(LiveStream, LiveStreamAdmin)
+admin.site.register(Blog, BlogAdmin)
+admin.site.register(Subscription, SubscriptionAdmin)

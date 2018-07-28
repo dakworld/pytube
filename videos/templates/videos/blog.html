@@ -1,0 +1,75 @@
+{% load static %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
+</head>
+
+<body>
+<div class='topbar'>
+<strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}"><img src="{% static 'logo.png' %}" height="50" width="100" alt="VidShare"></a></strong>
+<form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
+<input type="text" id="search" name="search" />
+<input type="submit" value="Search" />
+</form>
+</div>
+<div style="height: 50;"></div>
+<h1 style="text-align: center;">{{ blog.title }}</h1>
+<h3 style="text-align: center;"><em>uploaded by: <a href="{% url 'videos:user' blog.created_by.id %}">{{ blog.created_by.username }}</a> on {{ blog.pub_date }}</em></h3>
+<br>
+<center>
+<table>
+<tr>
+<td>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<p>{{ blog.text }}</p>
+<h4 style="color: plum;">Views: ({{ blog.views }}), Rating: ( {{ blog.up_votes }} )</h4>
+<form action="{% url 'videos:blograte' blog.id %}" method="post">
+{% csrf_token %}
+<input type="radio" name="choice" id="up" value="up" />
+<label for="up"><img src="{% static "up_vote.png" %}" style="width:40px;height:40px;"></label>
+<input type="radio" name="choice" id="down" value="down" />
+<label for="down"><img src="{% static "down_vote.png" %}" style="width:40px;height:40px;"></label><br>
+<input type="submit" value="Rate" />
+</form>
+</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>
+<h3>Add a Comment:</h3>
+<form action="{% url 'videos:blogcomment' blog=.id %}" method="post">
+{% csrf_token %}
+<!--<label for="name">Name: </label>-->
+<input type="text" name="name" id="name" value="{{ request.user.username }}" hidden />
+<textarea style="display: block; height: 100px; width: 100%" name="comment_text" id="comment_text"></textarea><br><br>
+{% if request.user.is_authenticated %}
+<input type="submit" value="Post Comment" />
+{% else %}
+<div style="background-color: grey; border-radius: 20px;">&nbsp;&nbsp;&nbsp;<a href="/admin">Login</a> or <a href="/register">Register</a> to comment.</div>
+{% endif %}
+</form>
+<h3>Comments:</h3>
+<div style="height: 400; overflow: auto;">
+{% for comment in blog.blogcomment_set.all %}
+    <h4>{{ comment.name }} &lt;<i>{{ comment.pub_date }}</i>&gt;</h4>
+    <blockquote><pre>{{ comment.message }}</pre></blockquote>
+{% endfor %}
+</div>
+</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>
+<script type="text/javascript">
+  ( function() {
+    if (window.CHITIKA === undefined) { window.CHITIKA = { 'units' : [] }; };
+    var unit = {"calltype":"async[2]","publisher":"vidshareads","width":300,"height":600,"sid":"Chitika Default"};
+    var placement_id = window.CHITIKA.units.length;
+    window.CHITIKA.units.push(unit);
+    document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
+}());
+</script>
+<script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
+</td>
+</tr>
+</table>
+</center>
+<div class='footer' style="float: right;">
+<a href="/admin">Login</a>&nbsp;|&nbsp;<a href="/register">Register</a>&nbsp;
+</div>
+</body>
