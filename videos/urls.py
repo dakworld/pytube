@@ -5,6 +5,7 @@ from . import views
 app_name = 'videos'
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+    path('about', views.AboutView.as_view(), name='about'),
     path('index/<dtype>/', views.ClassView.as_view(), name='class'),
     path('stream/<int:pk>/', views.StreamView.as_view(), name='stream'),
     path('stream/<int:stream_id>/rate/', views.streamrate, name='streamrate'),

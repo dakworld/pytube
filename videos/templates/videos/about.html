@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<center style="text-align: center; font-size: 130%">
+          <a href="/about"> About Us </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+          <a href="/index/videos"> Videos </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+          <a href="/index/podcasts"> Podcasts </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+          <a href="/index/streams"> Live Streams </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+          <a href="/index/posts"> Blog Posts </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+          <a href="/index/playlists"> Playlists </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+          <a href="/index/users"> Users </a>
+  </center>
+  <br>
+{% if not request.user.is_superuser %}
+<center class="ad">
+<script type="text/javascript">
+  ( function() {
+    if (window.CHITIKA === undefined) { window.CHITIKA = { 'units' : [] }; };
+    var unit = {"calltype":"async[2]","publisher":"vidshareads","width":728,"height":90,"sid":"Chitika Default"};
+    var placement_id = window.CHITIKA.units.length;
+    window.CHITIKA.units.push(unit);
+    document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
+}());
+</script>
+<script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
+</center>
+{% endif %}
+<p>
+Welcome to VidShare!
+</p>
+{% endblock %}

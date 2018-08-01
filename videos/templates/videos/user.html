@@ -1,16 +1,5 @@
-{% load static %}
-<head>
-<link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
-</head>
-<body>
-    <div class='topbar'>
-    <strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}"><img src="{% static 'logo.png' %}" height="50" width="100" alt="VidShare"></a></strong>
-    <form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
-    <input type="text" id="search" name="search" />
-    <input type="submit" value="Search" />
-    </form>
-    </div>
-    <div style="height: 50;"></div>
+{% extends "base.html" %}
+{% block content %}
 <h1 style="text-align: center;">{{ user.username }}</h1>
 <h3 style="text-align: center;"><em>Joined on: {{ user.date_joined }}</em></h3>
 <center>
@@ -26,6 +15,7 @@
 </tr>
 </table>
 </center>
+{% if not request.user.is_superuser %}
 <center class="ad">
 <script type="text/javascript">
   ( function() {
@@ -38,6 +28,7 @@
 </script>
 <script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
 </center>
+{% endif %}
 <br><br>
 {% if user.subscriptionmanager_set %}
     <div class = "row">
@@ -68,7 +59,4 @@
 {% else %}
     <p>No videos are available.</p>
 {% endif %}
-<div class='footer' style="float: right;">
-<a href="/admin">Login</a>&nbsp;|&nbsp;<a href="/register">Register</a>&nbsp;
-</div>
-</body>
+{% endblock %}

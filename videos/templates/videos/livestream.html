@@ -1,17 +1,9 @@
-{% load static %}
-<head>
+{% extends "base.html" %}
+{% block head %}
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
-</head>
-<body>
-<div class='topbar'>
-<strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}"><img src="{% static 'logo.png' %}" height="50" width="100" alt="VidShare"></a></strong>
-<form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
-<input type="text" id="search" name="search" />
-<input type="submit" value="Search" />
-</form>
-</div>
-<div style="height: 50;"></div>
+{% endblock %}
+{% block content %}
 <h1 style="text-align: center;">{{ livestream.title }}</h1>
 <h3 style="text-align: center;"><em>created by: <a href="{% url 'videos:user' livestream.created_by.id %}">{{ livestream.created_by.username }}</a> on {{ livestream.pub_date }}</em></h3>
 <br>
@@ -66,12 +58,25 @@
 </form>
 <h3>Comments:</h3>
 <div style="height: 400; overflow: auto;">
+{% if not request.user.is_superuser %}
+<script type="text/javascript">
+  ( function() {
+    if (window.CHITIKA === undefined) { window.CHITIKA = { 'units' : [] }; };
+    var unit = {"calltype":"async[2]","publisher":"vidshareads","width":320,"height":50,"sid":"Chitika Default"};
+    var placement_id = window.CHITIKA.units.length;
+    window.CHITIKA.units.push(unit);
+    document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
+}());
+</script>
+<script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
+{% endif %}
 {% for comment in livestream.streamcomment_set.all %}
     <h4>{{ comment.name }} &lt;<i>{{ comment.pub_date }}</i>&gt;</h4>
     <blockquote><pre>{{ comment.message }}</pre></blockquote>
 {% endfor %}
 </div>
 </td>
+{% if not request.user.is_superuser %}
 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
 <td>
 <script type="text/javascript">
@@ -85,10 +90,8 @@
 </script>
 <script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
 </td>
+{% endif %}
 </tr>
 </table>
 </center>
-<div class='footer' style="float: right;">
-<a href="/admin">Login</a>&nbsp;|&nbsp;<a href="/register">Register</a>&nbsp;
-</div>
-</body>
+{% endblock %}

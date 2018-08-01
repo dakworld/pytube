@@ -1,16 +1,16 @@
-{% load static %}
-<head>
-<link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
-</head>
-<body>
-  <div class='topbar'>
-  <strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}"><img src="{% static 'logo.png' %}" height="50" width="100" alt="VidShare"></a></strong>
-  <form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
-  <input type="text" id="search" name="search" />
-  <input type="submit" value="Search" />
-  </form>
-  </div>
-  <div style="height: 50;"></div>
+{% extends "base.html" %}
+{% block content %}
+  <center style="text-align: center; font-size: 130%">
+	  <a href="/about"> About Us </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+	  <a href="/index/videos"> Videos </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+	  <a href="/index/podcasts"> Podcasts </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+	  <a href="/index/streams"> Live Streams </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+	  <a href="/index/posts"> Blog Posts </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+	  <a href="/index/playlists"> Playlists </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+	  <a href="/index/users"> Users </a>
+  </center>
+  <br>
+{% if not request.user.is_superuser %}
 <center class="ad">
 <script type="text/javascript">
   ( function() {
@@ -23,6 +23,7 @@
 </script>
 <script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
 </center>
+{% endif %}
 {% if best_videos_list %}
     <div class = "row">
     {% for video in best_videos_list %}
@@ -39,7 +40,7 @@
     {% endif %}
     <br><em style="font-size: 75%;">by: {{ video.created_by.username }}</em></a>
     </div>
-    {% elif video.username %}
+    {% elif video.profile.listed %}
     <div class="column" style="vertical-align: middle; text-align: center;"><a href="{% url 'videos:user' video.id %}"><img src="/{{ video.profile.profile_pic }}" width=192 height=180 /><br>User: {{video.username}}</a></div>
     {% endif %}
     {% endfor %}
@@ -50,25 +51,22 @@
 {% if is_paginated %}
   <ul class="pagination">
     {% if page_obj.has_previous %}
-      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+      <div style="display: inline-block"><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></div>
     {% else %}
-      <li class="disabled"><span>&laquo;</span></li>
+      <div style="display: inline-block" class="disabled"><span>&laquo;</span></div>
     {% endif %}
     {% for i in paginator.page_range %}
       {% if page_obj.number == i %}
-        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        <div style="display: inline-block" class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></div>
       {% else %}
-        <li><a href="?page={{ i }}">{{ i }}</a></li>
+        <div style="display: inline-block"><a href="?page={{ i }}">{{ i }}</a></div> 
       {% endif %}
     {% endfor %}
     {% if page_obj.has_next %}
-      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+      <div style="display: inline-block"><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></div>
     {% else %}
-      <li class="disabled"><span>&raquo;</span></li>
+      <div style="display: inline-block" class="disabled"><span>&raquo;</span></div>
     {% endif %}
   </ul>
 {% endif %}
-<div class='footer' style="float: right;">
-<a href="/admin">Login</a>&nbsp;|&nbsp;<a href="/register">Register</a>&nbsp;
-</div>
-</body>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en_us">
+<head>
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'videos/style.css' %}" />
+{% endblock %}
+</head>
+<body>
+{% block header %}
+<div class='topbar'>
+<strong style="float: left; display: inline-block; font-size: 150%;">&nbsp;<a href="{% url 'videos:index' %}"><img src="{% static 'logo.png' %}" height="50" width="100" alt="VidShare"></a></strong>
+<form action="{% url 'videos:search' %}" style="float: right; font-size: 130%; display: inline-block;" method="get">
+<input type="text" id="search" name="search" />
+<input type="submit" value="Search" />
+</form>
+</div>
+<div style="height: 50;"></div>
+{% endblock %}
+{% block content %}<p>Nothing to see here!</p>{% endblock %}
+{% block footer %}
+<div class="footer" style="float: right;">
+{% if not request.user.is_authenticated %}
+<a href="{% url 'admin:login' %}">Login</a>
+&nbsp;|&nbsp;
+<a href="/register">Register</a>&nbsp;
+{% else %}
+<a href="{% url 'admin:logout' %}">Logout</a>
+&nbsp;|&nbsp;
+<a href="/admin">Creator Portal</a>&nbsp;
+{% endif %}
+</div>
+{% endblock %}
+</body>
+</html>

@@ -92,6 +92,9 @@ class SearchView(generic.ListView):
         search = sorted(chain(videos, blogs, streams, podcasts, playlists, users), key=lambda instance: instance.similarity, reverse=True)
         return search
 
+class AboutView(generic.TemplateView):
+    template_name = 'videos/about.html'
+
 class VideoView(generic.DetailView):
     model = Video
     template_name = 'videos/video.html'
