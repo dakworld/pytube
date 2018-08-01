@@ -30,7 +30,7 @@ EMAIL_HOST_PASSWORD = 'youtubesucks'
 SECRET_KEY = 'j*v(*h9i&+(3v#d0uof8xydkw&d32wrq17v^yg$xo-)+m4rm%4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['10.0.0.10', '76.108.191.243', 'vidshare.net', 'www.vidshare.net', 'localhost', '127.0.0.1']
 
