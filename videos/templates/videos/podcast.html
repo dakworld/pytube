@@ -14,9 +14,9 @@
 <form action="{% url 'videos:podcastrate' podcast.id %}" method="post">
 {% csrf_token %}
 <input type="radio" name="choice" id="up" value="up" />
-<label for="up"><img src="{% static "up_vote.png" %}" style="width:40px;height:40px;"></label>
+<label for="up"><img src="/uploads/up_vote.png" style="width:40px;height:40px;"></label>
 <input type="radio" name="choice" id="down" value="down" />
-<label for="down"><img src="{% static "down_vote.png" %}" style="width:40px;height:40px;"></label><br>
+<label for="down"><img src="/uploads/down_vote.png" style="width:40px;height:40px;"></label><br>
 <input type="submit" value="Rate" />
 </form>
 <p>{{ podcast.description }}</p>
